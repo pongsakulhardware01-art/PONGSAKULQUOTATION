@@ -99,6 +99,8 @@ export interface QuotationSettings {
 export interface QuotationDocument {
   id: string;
   quoteNumber: string;
+  revision?: number; // 0 = Rev.00, 1 = Rev.01, 2 = Rev.02, etc.
+  revisionNote?: string; // e.g. 'แก้ไขราคาตามต่อรอง', 'เพิ่มรายการ'
   referenceNo?: string;
   issueDate: string; // YYYY-MM-DD
   validUntil: string; // YYYY-MM-DD

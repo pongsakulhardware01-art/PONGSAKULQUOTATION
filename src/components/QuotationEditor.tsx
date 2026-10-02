@@ -343,7 +343,31 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
               <p className="text-xs text-stone-500">เลขที่เอกสาร วันที่ และเงื่อนไขการจัดส่ง</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Revision Pill & Quick Bump Button */}
+            <div className="flex items-center bg-stone-100 rounded-lg p-0.5 border border-stone-200">
+              <span className="text-xs font-bold text-stone-700 px-2 py-1">
+                {quote.revision !== undefined && quote.revision > 0
+                  ? `Rev. ${String(quote.revision).padStart(2, '0')}`
+                  : 'Rev. 00 (ตั้งต้น)'}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const nextRev = (quote.revision || 0) + 1;
+                  updateQuote({
+                    revision: nextRev,
+                    updatedAt: new Date().toISOString(),
+                  });
+                }}
+                className="text-[11px] font-semibold bg-white hover:bg-red-50 text-red-700 px-2 py-1 rounded-md shadow-2xs border border-stone-300 transition flex items-center gap-1 cursor-pointer"
+                title="กดเพื่อปรับเป็นเวอร์ชั่น/แก้ไขครั้งถัดไป (เช่น Rev.01, Rev.02)"
+              >
+                <Plus className="w-3 h-3 text-red-600" />
+                <span>+ ปรับ Rev.</span>
+              </button>
+            </div>
+
             <label htmlFor="quote-status-select" className="text-xs text-stone-500 font-medium hidden sm:inline">สถานะ:</label>
             <select
               id="quote-status-select"
@@ -360,8 +384,8 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="md:col-span-2">
             <div className="flex items-center justify-between mb-1">
               <label htmlFor="quote-number-input" className="block text-xs font-medium text-stone-700">
                 เลขที่ใบเสนอราคา <span className="text-red-500">*</span>
@@ -389,7 +413,41 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
             />
           </div>
 
-          <div className="relative">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label htmlFor="quote-revision-select" className="block text-xs font-medium text-stone-700">
+                เวอร์ชั่น (Rev.)
+              </label>
+              <button
+                type="button"
+                onClick={() => updateQuote({ revision: (quote.revision || 0) + 1 })}
+                className="text-[11px] font-semibold text-red-700 hover:text-red-800 hover:bg-red-50 px-1.5 py-0.5 rounded transition flex items-center gap-0.5 cursor-pointer"
+                title="ขยับเป็น Rev. ถัดไป"
+              >
+                <Plus className="w-3 h-3 text-red-600" />
+                <span>+1</span>
+              </button>
+            </div>
+            <select
+              id="quote-revision-select"
+              value={quote.revision || 0}
+              onChange={(e) => updateQuote({ revision: Number(e.target.value) })}
+              className="w-full text-sm font-semibold rounded-lg px-3 py-2 border border-stone-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-hidden bg-white"
+            >
+              <option value={0}>Rev. 00 (ต้นฉบับ)</option>
+              <option value={1}>Rev. 01 (แก้ไข 1)</option>
+              <option value={2}>Rev. 02 (แก้ไข 2)</option>
+              <option value={3}>Rev. 03 (แก้ไข 3)</option>
+              <option value={4}>Rev. 04 (แก้ไข 4)</option>
+              <option value={5}>Rev. 05 (แก้ไข 5)</option>
+              <option value={6}>Rev. 06 (แก้ไข 6)</option>
+              <option value={7}>Rev. 07 (แก้ไข 7)</option>
+              <option value={8}>Rev. 08 (แก้ไข 8)</option>
+              <option value={9}>Rev. 09 (แก้ไข 9)</option>
+            </select>
+          </div>
+
+          <div className="relative md:col-span-2">
             <div className="flex items-center justify-between mb-1">
               <label htmlFor="reference-no-input" className="block text-xs font-medium text-stone-700">
                 เลขอ้างอิง / ดึงรายการเดิม
@@ -494,7 +552,7 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
             />
           </div>
 
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-2 md:col-span-3">
             <label htmlFor="delivery-terms-input" className="block text-xs font-medium text-stone-700 mb-1">
               กำหนดส่งมอบ / สถานที่ส่ง
             </label>
@@ -505,6 +563,23 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
               onChange={(e) => updateQuote({ deliveryTerms: e.target.value })}
               className="w-full text-sm rounded-lg px-3 py-2 border border-stone-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-hidden"
               placeholder="เช่น จัดส่งภายใน 2-3 วันทำการ ถึงหน้างาน"
+            />
+          </div>
+
+          {/* Revision Note for Tracking Document Versions */}
+          <div className="sm:col-span-2 md:col-span-5 bg-amber-50/80 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-amber-700" />
+                บันทึกการแก้ไข (Rev. {String(quote.revision || 0).padStart(2, '0')}):
+              </span>
+            </div>
+            <input
+              type="text"
+              value={quote.revisionNote || ''}
+              onChange={(e) => updateQuote({ revisionNote: e.target.value })}
+              className="flex-1 text-xs px-3 py-1.5 bg-white border border-amber-300 rounded-lg outline-hidden focus:ring-2 focus:ring-amber-500 font-medium"
+              placeholder="บันทึกจุดที่แก้ไขในเวอร์ชั่นนี้ เช่น 'ปรับลดราคาตามเจรจา' หรือ 'เพิ่มรายการสินค้า'"
             />
           </div>
 

@@ -143,13 +143,27 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                   </div>
 
                   {/* Meta Details Box */}
-                  <div className="bg-stone-50 border border-stone-200/90 rounded-xl p-3 text-[11px] space-y-1.5 w-full sm:w-auto min-w-[185px]">
+                  <div className="bg-stone-50 border border-stone-200/90 rounded-xl p-3 text-[11px] space-y-1.5 w-full sm:w-auto min-w-[195px]">
                     <div className="flex justify-between sm:justify-end gap-3">
                       <span className="text-stone-500">เลขที่เอกสาร:</span>
-                      <span className="font-mono font-bold text-red-700 tracking-wide">
-                        {quote.quoteNumber}
-                      </span>
+                      <div className="flex items-center gap-1.5 font-mono font-bold text-red-700 tracking-wide">
+                        <span>{quote.quoteNumber}</span>
+                        {quote.revision !== undefined && quote.revision > 0 && (
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-bold">
+                            Rev.{String(quote.revision).padStart(2, '0')}
+                          </span>
+                        )}
+                      </div>
                     </div>
+                    {quote.revision !== undefined && quote.revision > 0 && (
+                      <div className="flex justify-between sm:justify-end gap-2 text-[10px]">
+                        <span className="text-stone-500">แก้ไขครั้งที่:</span>
+                        <span className="font-semibold text-stone-800">
+                          Rev. {String(quote.revision).padStart(2, '0')}
+                          {quote.revisionNote ? ` (${quote.revisionNote})` : ''}
+                        </span>
+                      </div>
+                    )}
                     {quote.referenceNo && (
                       <div className="flex justify-between sm:justify-end gap-3">
                         <span className="text-stone-500">เลขที่อ้างอิง:</span>
@@ -210,7 +224,24 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                     <span className="block text-[9px] font-medium tracking-widest text-red-200">QUOTATION</span>
                   </div>
                   <div className="text-[10.5px] space-y-0.5 font-medium">
-                    <p><span className="text-stone-500">เลขที่:</span> <strong className="font-mono text-red-700">{quote.quoteNumber}</strong></p>
+                    <p>
+                      <span className="text-stone-500">เลขที่:</span>{' '}
+                      <strong className="font-mono text-red-700">{quote.quoteNumber}</strong>
+                      {quote.revision !== undefined && quote.revision > 0 && (
+                        <span className="ml-1.5 text-[9.5px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-bold">
+                          Rev.{String(quote.revision).padStart(2, '0')}
+                        </span>
+                      )}
+                    </p>
+                    {quote.revision !== undefined && quote.revision > 0 && (
+                      <p className="text-[10px]">
+                        <span className="text-stone-500">แก้ไขครั้งที่:</span>{' '}
+                        <strong className="text-stone-800">
+                          Rev. {String(quote.revision).padStart(2, '0')}
+                          {quote.revisionNote ? ` (${quote.revisionNote})` : ''}
+                        </strong>
+                      </p>
+                    )}
                     {quote.referenceNo && <p><span className="text-stone-500">อ้างอิง:</span> <span className="font-mono">{quote.referenceNo}</span></p>}
                     <p><span className="text-stone-500">วันที่:</span> {formatThaiDate(quote.issueDate, 'slash')}</p>
                     <p><span className="text-stone-500">ยืนราคาถึง:</span> <strong className="text-red-700">{formatThaiDate(quote.validUntil, 'slash')}</strong></p>
@@ -248,7 +279,19 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 <h2 className="text-lg font-bold text-stone-900 tracking-wide">ใบเสนอราคา</h2>
                 <span className="text-[10px] text-stone-400 font-mono tracking-widest block -mt-1 mb-2 uppercase">QUOTATION</span>
                 <div className="text-[10.5px] space-y-0.5 text-stone-600">
-                  <p>เลขที่: <span className="font-mono font-bold text-stone-900">{quote.quoteNumber}</span></p>
+                  <p>
+                    เลขที่: <span className="font-mono font-bold text-stone-900">{quote.quoteNumber}</span>
+                    {quote.revision !== undefined && quote.revision > 0 && (
+                      <span className="ml-1.5 text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-bold">
+                        Rev.{String(quote.revision).padStart(2, '0')}
+                      </span>
+                    )}
+                  </p>
+                  {quote.revision !== undefined && quote.revision > 0 && (
+                    <p className="text-[10px]">
+                      แก้ไขครั้งที่: <strong className="text-stone-800">Rev. {String(quote.revision).padStart(2, '0')}{quote.revisionNote ? ` (${quote.revisionNote})` : ''}</strong>
+                    </p>
+                  )}
                   <p>วันที่: <span className="font-medium">{formatThaiDate(quote.issueDate, 'slash')}</span></p>
                   <p>ยืนราคาถึง: <span className="font-medium text-red-700">{formatThaiDate(quote.validUntil, 'slash')}</span></p>
                 </div>
@@ -623,6 +666,15 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
             </div>
           </div>
         )}
+
+        {/* Document Version & Print Audit Footer */}
+        <div className="pt-3 mt-4 text-[9px] text-stone-400 font-mono flex items-center justify-between border-t border-stone-200/60">
+          <span>
+            เอกสาร: {quote.quoteNumber} (Rev. {String(quote.revision || 0).padStart(2, '0')})
+            {quote.revisionNote ? ` - ${quote.revisionNote}` : ''}
+          </span>
+          <span>บจก. พงษ์สกุล ฮาร์ดแวร์ • ออกโดยระบบคลาวด์</span>
+        </div>
       </div>
     </div>
   );

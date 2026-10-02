@@ -27,6 +27,8 @@ import { HistoryDrawer } from './components/HistoryDrawer';
 import { CompanySettingsModal } from './components/CompanySettingsModal';
 import { ExportJpgModal } from './components/ExportJpgModal';
 import { CustomerDatabaseModal } from './components/CustomerDatabaseModal';
+import { VersionModal } from './components/VersionModal';
+import { APP_VERSION, APP_BUILD_DATE } from './version';
 import {
   testFirestoreConnection,
   loginWithGoogle,
@@ -194,6 +196,7 @@ export default function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportJpgPreviewUrl, setExportJpgPreviewUrl] = useState<string | null>(null);
   const [isExportingJpg, setIsExportingJpg] = useState(false);
@@ -747,6 +750,7 @@ export default function App() {
         onOpenCatalog={() => setIsCatalogOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenCustomers={() => setIsCustomerModalOpen(true)}
+        onOpenVersion={() => setIsVersionModalOpen(true)}
         customerCount={customers.length}
         savedCount={savedQuotes.length}
         quoteNumber={quote.quoteNumber}
@@ -893,6 +897,25 @@ export default function App() {
         <div className="print-only hidden">
           <QuotationPreview quote={quote} />
         </div>
+
+        {/* Application Footer */}
+        <footer className="no-print pt-8 pb-3 text-center text-xs text-stone-500 border-t border-stone-200/80 mt-10">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+            <span>© {new Date().getFullYear()} บริษัท พงษ์สกุล ฮาร์ดแวร์ จำกัด</span>
+            <span className="hidden sm:inline text-stone-300">•</span>
+            <button
+              type="button"
+              onClick={() => setIsVersionModalOpen(true)}
+              className="inline-flex items-center gap-1 font-mono font-medium text-stone-600 hover:text-red-700 bg-stone-100 hover:bg-stone-200 px-2 py-0.5 rounded transition cursor-pointer"
+              title="ดูประวัติการปรับปรุงเวอร์ชัน"
+            >
+              <span>เวอร์ชัน {APP_VERSION}</span>
+              <span className="text-[10px] text-stone-400">({APP_BUILD_DATE})</span>
+            </button>
+            <span className="hidden sm:inline text-stone-300">•</span>
+            <span>ระบบออกใบเสนอราคามาตรฐาน A4 / Cloud Sync</span>
+          </div>
+        </footer>
       </main>
 
       {/* Dedicated Offscreen Unscaled A4 Container for 100% Crisp JPG Generation */}
@@ -993,6 +1016,12 @@ export default function App() {
         onDeleteCustomer={handleDeleteCustomer}
         onCreateQuoteForCustomer={handleCreateQuoteForCustomer}
         isCloudConnected={isCloudConnected}
+      />
+
+      {/* Version Information & Changelog Modal */}
+      <VersionModal
+        isOpen={isVersionModalOpen}
+        onClose={() => setIsVersionModalOpen(false)}
       />
     </div>
   );

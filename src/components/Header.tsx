@@ -19,6 +19,7 @@ import {
   User,
 } from 'lucide-react';
 import { LogoEmblem } from './LogoEmblem';
+import { APP_VERSION } from '../version';
 
 interface HeaderProps {
   viewMode: 'split' | 'edit' | 'preview';
@@ -32,6 +33,7 @@ interface HeaderProps {
   onOpenCatalog: () => void;
   onOpenSettings: () => void;
   onOpenCustomers: () => void;
+  onOpenVersion?: () => void;
   customerCount: number;
   savedCount: number;
   isSaving?: boolean;
@@ -54,6 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCatalog,
   onOpenSettings,
   onOpenCustomers,
+  onOpenVersion,
   customerCount,
   savedCount,
   isSaving,
@@ -76,6 +79,14 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
                   ระบบออกใบเสนอราคา
                 </span>
+                <button
+                  type="button"
+                  onClick={onOpenVersion}
+                  className="inline-flex items-center gap-0.5 text-[10px] font-mono font-bold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-1.5 py-0.2 rounded-md transition cursor-pointer"
+                  title="คลิกเพื่อดูรายละเอียดเวอร์ชันและประวัติการอัปเดต (Changelog)"
+                >
+                  v{APP_VERSION}
+                </button>
                 {isCloudConnected ? (
                   <span
                     className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded-md border border-emerald-200"

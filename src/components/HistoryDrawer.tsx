@@ -193,15 +193,29 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                 >
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold font-mono text-sm text-stone-900">
                           {q.quoteNumber}
+                        </span>
+                        <span
+                          className={`text-[9.5px] font-bold px-1.5 py-0.2 rounded border ${
+                            q.revision !== undefined && q.revision > 0
+                              ? 'bg-amber-100 text-amber-900 border-amber-300'
+                              : 'bg-stone-100 text-stone-600 border-stone-200'
+                          }`}
+                        >
+                          Rev.{String(q.revision || 0).padStart(2, '0')}
                         </span>
                         {getStatusBadge(q.status)}
                       </div>
                       <div className="text-xs font-semibold text-stone-800 mt-0.5">
                         {q.customer.companyName || q.customer.name || 'ไม่ได้ระบุชื่อลูกค้า'}
                       </div>
+                      {q.revisionNote && (
+                        <div className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/80 mt-1 line-clamp-1">
+                          แก้ไข: {q.revisionNote}
+                        </div>
+                      )}
                     </div>
                     <div className="text-right">
                       <div className="font-mono font-bold text-sm text-red-700">

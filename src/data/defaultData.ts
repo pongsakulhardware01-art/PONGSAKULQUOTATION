@@ -263,6 +263,8 @@ export function createInitialQuotation(): QuotationDocument {
   return {
     id: 'quote-' + Date.now(),
     quoteNumber: generateQuoteNumber('PKH'),
+    revision: 0,
+    revisionNote: '',
     referenceNo: 'PO-REF-2026-001',
     issueDate: today.toISOString().split('T')[0],
     validUntil: validDate.toISOString().split('T')[0],

@@ -3,6 +3,7 @@ import { CompanyProfile, BankAccount } from '../types';
 import { X, Building2, Save, CreditCard, Plus, Trash2, RotateCcw, Upload, Image as ImageIcon, Check } from 'lucide-react';
 import { DEFAULT_COMPANY, DEFAULT_BANK_ACCOUNTS, DEFAULT_TERMS, DEFAULT_NOTES } from '../data/defaultData';
 import { LogoEmblem } from './LogoEmblem';
+import { APP_VERSION } from '../version';
 
 interface CompanySettingsModalProps {
   isOpen: boolean;
@@ -373,14 +374,19 @@ export const CompanySettingsModal: React.FC<CompanySettingsModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-stone-50 border-t border-stone-200 flex items-center justify-between">
-          <button
-            onClick={handleResetDefaults}
-            className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-900 font-medium py-2 px-3 rounded-lg hover:bg-stone-200 transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>คืนค่าเริ่มต้น</span>
-          </button>
+        <div className="px-6 py-4 bg-stone-50 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleResetDefaults}
+              className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-900 font-medium py-2 px-3 rounded-lg hover:bg-stone-200 transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>คืนค่าเริ่มต้น</span>
+            </button>
+            <span className="text-[11px] text-stone-400 font-mono">
+              v{APP_VERSION}
+            </span>
+          </div>
 
           <div className="flex items-center gap-2">
             <button
