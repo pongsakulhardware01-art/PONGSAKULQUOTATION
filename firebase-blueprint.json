@@ -1,0 +1,152 @@
+{
+  "entities": {
+    "Quotation": {
+      "title": "Quotation",
+      "description": "Quotation document issued to customers with auto-running number and line items",
+      "type": "object",
+      "properties": {
+        "quoteNumber": {
+          "type": "string",
+          "description": "Formatted quotation number e.g. PKH-202610-0001",
+          "maxLength": 64
+        },
+        "refQuoteNumber": {
+          "type": "string",
+          "description": "Optional reference to a prior quotation number for cloning items and prices",
+          "maxLength": 64
+        },
+        "date": {
+          "type": "string",
+          "description": "ISO date string or YYYY-MM-DD",
+          "maxLength": 32
+        },
+        "validUntil": {
+          "type": "string",
+          "description": "Quotation validity date",
+          "maxLength": 32
+        },
+        "salesperson": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "issued", "approved", "rejected", "cancelled"]
+        },
+        "subtotal": {
+          "type": "number"
+        },
+        "grandTotal": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "createdBy": {
+          "type": "string",
+          "maxLength": 128
+        }
+      },
+      "required": ["quoteNumber", "date", "grandTotal"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer database profile with contact info and tax details",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Primary customer or company name",
+          "maxLength": 200
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Full company registered name",
+          "maxLength": 200
+        },
+        "taxId": {
+          "type": "string",
+          "description": "13-digit tax ID or identification number",
+          "maxLength": 32
+        },
+        "branch": {
+          "type": "string",
+          "description": "Branch name or head office",
+          "maxLength": 64
+        },
+        "address": {
+          "type": "string",
+          "description": "Billing or shipping address",
+          "maxLength": 500
+        },
+        "contactPerson": {
+          "type": "string",
+          "description": "Contact person name",
+          "maxLength": 128
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number(s)",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address",
+          "maxLength": 128
+        },
+        "notes": {
+          "type": "string",
+          "description": "Internal customer notes",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "required": ["name"]
+    },
+    "Counter": {
+      "title": "Counter",
+      "description": "Sequence tracker for generating sequential quotation numbers",
+      "type": "object",
+      "properties": {
+        "prefix": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "currentNumber": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "required": ["currentNumber"]
+    }
+  },
+  "firestore": {
+    "/quotations/{quotationId}": {
+      "schema": "Quotation",
+      "description": "Collection of all quotation documents across users"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Collection of customer records for autofill and management"
+    },
+    "/counters/{counterId}": {
+      "schema": "Counter",
+      "description": "Quotation number sequence counters"
+    }
+  }
+}
