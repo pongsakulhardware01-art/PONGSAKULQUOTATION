@@ -27,6 +27,7 @@ import { HistoryDrawer } from './components/HistoryDrawer';
 import { CompanySettingsModal } from './components/CompanySettingsModal';
 import { ExportJpgModal } from './components/ExportJpgModal';
 import { CustomerDatabaseModal } from './components/CustomerDatabaseModal';
+import { DocumentPreviewModal } from './components/DocumentPreviewModal';
 import { VersionModal } from './components/VersionModal';
 import { APP_VERSION, APP_BUILD_DATE } from './version';
 import {
@@ -191,7 +192,8 @@ export default function App() {
   });
 
   // 2. UI View and Modals state
-  const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+  const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>('edit');
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -739,12 +741,11 @@ export default function App() {
     <div className="min-h-screen bg-stone-100 flex flex-col font-sans">
       {/* Top Header */}
       <Header
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
         onNewQuote={handleNewQuote}
         onSaveQuote={handleSaveToHistory}
         onPrint={handlePrint}
         onExportJpg={handleOpenExportModal}
+        onOpenPreview={() => setIsPreviewModalOpen(true)}
         isExportingJpg={isExportingJpg}
         onOpenHistory={() => setIsHistoryOpen(true)}
         onOpenCatalog={() => setIsCatalogOpen(true)}
@@ -760,140 +761,26 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* Main Workspace Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6">
-        {/* Split View Mode (Default on desktop) */}
-        {viewMode === 'split' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left: Editor Form (Col 1-7) */}
-            <div className="lg:col-span-7 no-print">
-              <QuotationEditor
-                quote={quote}
-                onChange={handleQuoteChange}
-                onOpenCatalog={() => setIsCatalogOpen(true)}
-                customers={customers}
-                savedQuotes={savedQuotes}
-                onOpenCustomerDB={() => setIsCustomerModalOpen(true)}
-                onSaveCustomerToDB={async (cust) => {
-                  await handleSaveCustomer({ ...cust, name: cust.companyName || cust.name });
-                }}
-                onGenerateNextNumber={handleGenerateNextQuoteNumber}
-                isGeneratingNumber={isGeneratingNumber}
-              />
-            </div>
+      {/* Main Workspace Area: Clean, Spacious, and Uncluttered */}
+      <main className="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-6 no-print">
+        <QuotationEditor
+          quote={quote}
+          onChange={handleQuoteChange}
+          onOpenCatalog={() => setIsCatalogOpen(true)}
+          customers={customers}
+          savedQuotes={savedQuotes}
+          onOpenCustomerDB={() => setIsCustomerModalOpen(true)}
+          onSaveCustomerToDB={async (cust) => {
+            await handleSaveCustomer({ ...cust, name: cust.companyName || cust.name });
+          }}
+          onGenerateNextNumber={handleGenerateNextQuoteNumber}
+          isGeneratingNumber={isGeneratingNumber}
+          onOpenPreview={() => setIsPreviewModalOpen(true)}
+          onExportJpg={handleOpenExportModal}
+          onPrint={handlePrint}
+        />
 
-            {/* Right: Sticky A4 Preview (Col 8-12) */}
-            <div className="lg:col-span-5 lg:sticky lg:top-20 space-y-3">
-              {/* Visual customization bar */}
-              <div className="no-print">
-                <VisualSettingsToolbar
-                  settings={quote.settings}
-                  onUpdateSettings={handleUpdateVisualSettings}
-                />
-              </div>
-
-              <div className="overflow-x-auto">
-                <div className="flex items-center justify-between bg-stone-800 text-stone-200 px-4 py-2.5 rounded-t-xl text-xs font-semibold no-print">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    ตัวอย่างเอกสารใบเสนอราคา (Live A4 Preview)
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={handleOpenExportModal}
-                      disabled={isExportingJpg}
-                      className="inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-stone-900 font-semibold px-2.5 py-1 rounded text-[11px] transition-colors cursor-pointer"
-                      title="บันทึกเป็นภาพ JPG สำหรับส่ง LINE หรือแชต"
-                    >
-                      <FileImage className="w-3 h-3 text-stone-900" />
-                      <span>{isExportingJpg ? 'กำลังสร้าง...' : 'บันทึก JPG'}</span>
-                    </button>
-                    <button
-                      onClick={handlePrint}
-                      className="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-[11px] transition-colors cursor-pointer"
-                    >
-                      <Printer className="w-3 h-3" />
-                      <span>พิมพ์</span>
-                    </button>
-                  </div>
-                </div>
-                <div className="bg-stone-300 p-2 sm:p-4 rounded-b-xl overflow-x-auto shadow-inner flex justify-center">
-                  <div className="transform scale-[0.82] sm:scale-[0.88] lg:scale-[0.92] origin-top">
-                    <QuotationPreview quote={quote} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Only View Mode */}
-        {viewMode === 'edit' && (
-          <div className="max-w-4xl mx-auto no-print space-y-4">
-            <VisualSettingsToolbar
-              settings={quote.settings}
-              onUpdateSettings={handleUpdateVisualSettings}
-            />
-            <QuotationEditor
-              quote={quote}
-              onChange={handleQuoteChange}
-              onOpenCatalog={() => setIsCatalogOpen(true)}
-              customers={customers}
-              savedQuotes={savedQuotes}
-              onOpenCustomerDB={() => setIsCustomerModalOpen(true)}
-              onSaveCustomerToDB={async (cust) => {
-                await handleSaveCustomer({ ...cust, name: cust.companyName || cust.name });
-              }}
-              onGenerateNextNumber={handleGenerateNextQuoteNumber}
-              isGeneratingNumber={isGeneratingNumber}
-            />
-          </div>
-        )}
-
-        {/* Preview Only View Mode (Full Screen A4 Document) */}
-        {viewMode === 'preview' && (
-          <div className="max-w-4xl mx-auto flex flex-col items-center space-y-4">
-            <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-stone-200 shadow-xs no-print">
-              <div className="text-xs text-stone-600">
-                เอกสารพร้อมพิมพ์ / บันทึกเป็น PDF หรือส่งออกเป็นรูปภาพ JPG (ขนาดมาตรฐาน A4)
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode('edit')}
-                  className="px-3 py-1.5 text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg"
-                >
-                  กลับไปแก้ไข
-                </button>
-                <button
-                  onClick={handleOpenExportModal}
-                  disabled={isExportingJpg}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-stone-900 bg-amber-400 hover:bg-amber-500 rounded-lg shadow-xs transition-colors"
-                >
-                  <FileImage className="w-3.5 h-3.5 text-stone-900" />
-                  <span>บันทึกเป็น JPG (ส่ง LINE)</span>
-                </button>
-                <button
-                  onClick={handlePrint}
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-xs"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>สั่งพิมพ์ / PDF</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="w-full no-print">
-              <VisualSettingsToolbar
-                settings={quote.settings}
-                onUpdateSettings={handleUpdateVisualSettings}
-              />
-            </div>
-
-            <QuotationPreview quote={quote} />
-          </div>
-        )}
-
-        {/* Always render QuotationPreview for @media print rendering if print is triggered from another view */}
+        {/* Hidden on screen, rendered exclusively for browser @media print */}
         <div className="print-only hidden">
           <QuotationPreview quote={quote} />
         </div>
@@ -1016,6 +903,17 @@ export default function App() {
         onDeleteCustomer={handleDeleteCustomer}
         onCreateQuoteForCustomer={handleCreateQuoteForCustomer}
         isCloudConnected={isCloudConnected}
+      />
+
+      {/* Document A4 Preview Modal (On-Demand & Clean) */}
+      <DocumentPreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={() => setIsPreviewModalOpen(false)}
+        quote={quote}
+        onPrint={handlePrint}
+        onExportJpg={handleOpenExportModal}
+        isExportingJpg={isExportingJpg}
+        onUpdateSettings={handleUpdateVisualSettings}
       />
 
       {/* Version Information & Changelog Modal */}

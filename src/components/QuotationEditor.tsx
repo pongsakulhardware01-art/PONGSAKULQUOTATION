@@ -23,6 +23,9 @@ import {
   RefreshCw,
   FolderOpen,
   Check,
+  Eye,
+  FileImage,
+  Printer,
 } from 'lucide-react';
 import {
   QuotationDocument,
@@ -45,6 +48,9 @@ interface QuotationEditorProps {
   onSaveCustomerToDB?: (customer: CustomerInfo) => Promise<void>;
   onGenerateNextNumber?: () => Promise<void>;
   isGeneratingNumber?: boolean;
+  onOpenPreview?: () => void;
+  onExportJpg?: () => void;
+  onPrint?: () => void;
 }
 
 const COMMON_UNITS = [
@@ -77,6 +83,9 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
   onSaveCustomerToDB,
   onGenerateNextNumber,
   isGeneratingNumber,
+  onOpenPreview,
+  onExportJpg,
+  onPrint,
 }) => {
   const [refAlert, setRefAlert] = useState<string | null>(null);
   const [isRefDropdownOpen, setIsRefDropdownOpen] = useState(false);
@@ -331,11 +340,74 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
 
   return (
     <div className="space-y-6 pb-12">
+      {/* Top Action Bar for Quick Preview & Export */}
+      <div className="bg-stone-900 text-white rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-stone-800">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-red-600/90 flex items-center justify-center text-white shadow-xs shrink-0">
+            <Receipt className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-300">
+                แบบฟอร์มจัดทำใบเสนอราคา
+              </span>
+              <span className="text-[10px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-2 py-0.5 rounded-full">
+                หน้าจอจัดระเบียบ
+              </span>
+            </div>
+            <p className="text-xs text-stone-400">
+              พื้นที่กรอกข้อมูลกว้างสบายตา กดดูตัวอย่างหรือส่งออกได้ทันที
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+          {onOpenPreview && (
+            <button
+              type="button"
+              onClick={onOpenPreview}
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-100 border border-stone-700 font-semibold text-xs rounded-xl shadow-xs transition cursor-pointer"
+              title="เปิดดูตัวอย่างเอกสาร A4 เต็มตา"
+            >
+              <Eye className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+              <span className="hidden sm:inline">ดูตัวอย่างเอกสาร A4</span>
+              <span className="sm:hidden text-[11px]">พรีวิว A4</span>
+            </button>
+          )}
+
+          {onExportJpg && (
+            <button
+              type="button"
+              onClick={onExportJpg}
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-stone-950 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+              title="สร้างและบันทึกภาพ JPG เพื่อส่ง LINE หรือแชต"
+            >
+              <FileImage className="w-3.5 h-3.5 text-stone-950 shrink-0" />
+              <span className="hidden sm:inline">ส่งออก JPG (ส่ง LINE)</span>
+              <span className="sm:hidden text-[11px]">ส่งออก JPG</span>
+            </button>
+          )}
+
+          {onPrint && (
+            <button
+              type="button"
+              onClick={onPrint}
+              className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold text-xs rounded-xl shadow-xs transition cursor-pointer"
+              title="พิมพ์เอกสารออกเครื่องพิมพ์ หรือบันทึกเป็น PDF"
+            >
+              <Printer className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">พิมพ์ / PDF</span>
+              <span className="sm:hidden text-[11px]">พิมพ์ PDF</span>
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* 1. Document & Status Card */}
-      <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs">
-        <div className="flex items-center justify-between border-b border-stone-100 pb-3 mb-4">
+      <div className="bg-white rounded-xl border border-stone-200 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-3 mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold shrink-0">
               <FileText className="w-4 h-4" />
             </div>
             <div>
@@ -968,7 +1040,8 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+              {/* Desktop View (md & up) */}
+              <div className="hidden md:grid md:grid-cols-12 gap-2.5 items-start">
                 {/* Description & Sub-details */}
                 <div className="md:col-span-5 space-y-1.5">
                   <input
@@ -989,9 +1062,6 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
 
                 {/* Quantity */}
                 <div className="md:col-span-2">
-                  <label className="block md:hidden text-[10px] font-medium text-stone-500 mb-0.5">
-                    จำนวน
-                  </label>
                   <input
                     type="number"
                     min="0"
@@ -1005,9 +1075,6 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
 
                 {/* Unit */}
                 <div className="md:col-span-1">
-                  <label className="block md:hidden text-[10px] font-medium text-stone-500 mb-0.5">
-                    หน่วย
-                  </label>
                   <input
                     list={`units-list-${idx}`}
                     type="text"
@@ -1025,9 +1092,6 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
 
                 {/* Unit Price */}
                 <div className="md:col-span-2">
-                  <label className="block md:hidden text-[10px] font-medium text-stone-500 mb-0.5">
-                    ราคา/หน่วย (บาท)
-                  </label>
                   <div className="relative">
                     <input
                       type="number"
@@ -1042,9 +1106,79 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
                 </div>
 
                 {/* Row Total */}
-                <div className="md:col-span-2 flex flex-col justify-center text-right">
+                <div className="md:col-span-2 flex flex-col justify-center text-right pt-1">
                   <span className="text-[10px] text-stone-400 font-medium">รวมเป็นเงิน</span>
                   <span className="text-sm font-bold font-mono text-stone-900">
+                    ฿{formatCurrency(item.total)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Mobile View (< md) - Clean, Ergonomic, Non-Overlapping Mobile Cards */}
+              <div className="md:hidden space-y-2.5">
+                <div>
+                  <input
+                    type="text"
+                    value={item.description}
+                    onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
+                    className="w-full text-sm font-medium rounded-lg px-3 py-2 bg-white border border-stone-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-hidden"
+                    placeholder="ชื่อรายการสินค้า / บริการ *"
+                  />
+                  <input
+                    type="text"
+                    value={item.details || ''}
+                    onChange={(e) => handleItemChange(idx, 'details', e.target.value)}
+                    className="w-full text-xs text-stone-600 rounded-lg px-3 py-1.5 mt-1.5 bg-white border border-stone-200 focus:ring-1 focus:ring-red-500 focus:border-red-500 outline-hidden"
+                    placeholder="รายละเอียดสเปก (ถ้ามี)"
+                  />
+                </div>
+
+                <div className="grid grid-cols-12 gap-2 items-center">
+                  <div className="col-span-4">
+                    <label className="block text-[10px] font-semibold text-stone-500 mb-0.5">จำนวน</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={item.quantity === 0 ? '' : item.quantity}
+                      onChange={(e) => handleItemChange(idx, 'quantity', parseFloat(e.target.value) || 0)}
+                      className="w-full text-sm font-mono text-center rounded-lg px-2 py-1.5 bg-white border border-stone-300 focus:ring-2 focus:ring-red-500 outline-hidden"
+                      placeholder="จำนวน"
+                    />
+                  </div>
+                  <div className="col-span-3">
+                    <label className="block text-[10px] font-semibold text-stone-500 mb-0.5">หน่วย</label>
+                    <input
+                      list={`units-list-mobile-${idx}`}
+                      type="text"
+                      value={item.unit}
+                      onChange={(e) => handleItemChange(idx, 'unit', e.target.value)}
+                      className="w-full text-xs text-center rounded-lg px-1.5 py-1.5 bg-white border border-stone-300 focus:ring-1 focus:ring-red-500 outline-hidden"
+                      placeholder="หน่วย"
+                    />
+                    <datalist id={`units-list-mobile-${idx}`}>
+                      {COMMON_UNITS.map((u) => (
+                        <option key={u} value={u} />
+                      ))}
+                    </datalist>
+                  </div>
+                  <div className="col-span-5">
+                    <label className="block text-[10px] font-semibold text-stone-500 mb-0.5">ราคา/หน่วย (฿)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={item.unitPrice === 0 ? '' : item.unitPrice}
+                      onChange={(e) => handleItemChange(idx, 'unitPrice', parseFloat(e.target.value) || 0)}
+                      className="w-full text-sm font-mono text-right rounded-lg px-2.5 py-1.5 bg-white border border-stone-300 focus:ring-2 focus:ring-red-500 outline-hidden font-semibold"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-stone-200">
+                  <span className="text-xs text-stone-500 font-medium">รวมเป็นเงิน:</span>
+                  <span className="text-sm font-bold font-mono text-red-700">
                     ฿{formatCurrency(item.total)}
                   </span>
                 </div>
@@ -1054,29 +1188,31 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
         </div>
 
         {/* Add Row Button at bottom */}
-        <div className="mt-4 flex items-center justify-between pt-2 border-t border-stone-100">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-stone-100">
           <button
             onClick={handleAddItem}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 py-1 px-2.5 rounded-lg hover:bg-red-50 transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 py-1.5 px-3 rounded-lg hover:bg-red-50 bg-red-50/50 sm:bg-transparent border border-red-200 sm:border-transparent transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>+ เพิ่มรายการถัดไป</span>
           </button>
-          <span className="text-xs text-stone-500">
-            ยอดรวมรายการทั้งหมด: <strong className="text-stone-800">฿{formatCurrency(quote.subtotal)}</strong>
+          <span className="text-xs text-stone-500 text-right">
+            ยอดรวมรายการทั้งหมด: <strong className="text-stone-800 font-mono font-bold">฿{formatCurrency(quote.subtotal)}</strong>
           </span>
         </div>
       </div>
 
       {/* 4. Financial Calculations & Tax Settings Card */}
-      <div className="bg-white rounded-xl border border-stone-200 p-5 shadow-xs">
-        <div className="flex items-center gap-2 border-b border-stone-100 pb-3 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold">
-            <Percent className="w-4 h-4" />
-          </div>
-          <div>
-            <h2 className="text-base font-bold text-stone-900">การคิดภาษี ส่วนลด และค่าจัดส่ง</h2>
-            <p className="text-xs text-stone-500">กำหนดภาษีมูลค่าเพิ่ม (VAT 7%) ภาษีหัก ณ ที่จ่าย และส่วนลดพิเศษ</p>
+      <div className="bg-white rounded-xl border border-stone-200 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold shrink-0">
+              <Percent className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-stone-900">การคิดภาษี ส่วนลด และค่าจัดส่ง</h2>
+              <p className="text-xs text-stone-500">กำหนดภาษีมูลค่าเพิ่ม (VAT 7%) ภาษีหัก ณ ที่จ่าย และส่วนลดพิเศษ</p>
+            </div>
           </div>
         </div>
 
@@ -1304,6 +1440,54 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
               <option value="comfortable">โปร่ง สบายตา (แนะนำ)</option>
               <option value="compact">กะทัดรัด</option>
             </select>
+          </div>
+        </div>
+
+        {/* Quick Action Footer inside Editor */}
+        <div className="mt-5 pt-4 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-stone-50 p-3.5 sm:p-4 rounded-xl">
+          <div className="text-xs text-stone-600 flex items-center justify-between sm:justify-start">
+            <span>ยอดรวมสุทธิทั้งสิ้น:</span>
+            <strong className="text-red-700 font-mono text-base font-bold ml-1.5">
+              ฿{formatCurrency(quote.totalAmount)}
+            </strong>
+          </div>
+          <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+            {onOpenPreview && (
+              <button
+                type="button"
+                onClick={onOpenPreview}
+                className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2 bg-stone-800 hover:bg-stone-900 text-white font-medium text-xs rounded-xl shadow-xs transition cursor-pointer"
+                title="เปิดดูตัวอย่างเอกสาร A4 เต็มตา"
+              >
+                <Eye className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <span className="hidden sm:inline">ดูตัวอย่างเอกสาร A4</span>
+                <span className="sm:hidden text-[11px]">พรีวิว A4</span>
+              </button>
+            )}
+            {onExportJpg && (
+              <button
+                type="button"
+                onClick={onExportJpg}
+                className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-stone-950 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                title="ส่งออกรูปภาพ JPG เพื่อส่ง LINE หรือแชต"
+              >
+                <FileImage className="w-3.5 h-3.5 text-stone-950 shrink-0" />
+                <span className="hidden sm:inline">ส่งออก JPG (ส่ง LINE)</span>
+                <span className="sm:hidden text-[11px]">ส่งออก JPG</span>
+              </button>
+            )}
+            {onPrint && (
+              <button
+                type="button"
+                onClick={onPrint}
+                className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                title="พิมพ์เอกสารออกเครื่องพิมพ์ หรือบันทึกเป็น PDF"
+              >
+                <Printer className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">พิมพ์ / บันทึก PDF</span>
+                <span className="sm:hidden text-[11px]">พิมพ์ PDF</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

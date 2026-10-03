@@ -10,10 +10,33 @@ export interface VersionRelease {
   highlights: string[];
 }
 
-export const APP_VERSION = '2.1.0';
-export const APP_BUILD_DATE = '2026-10-02';
+export const APP_VERSION = '2.3.0';
+export const APP_BUILD_DATE = '2026-10-03';
 
 export const VERSION_HISTORY: VersionRelease[] = [
+  {
+    version: '2.3.0',
+    date: '2026-10-03',
+    title: 'Mobile-First Responsive UI & Overlap Fixes',
+    highlights: [
+      'แก้ไขปัญหาปุ่มและองค์ประกอบหน้าจอทับซ้อนกันบนมือถือและแท็บเล็ต',
+      'ออกแบบหน้าจอแก้ไขให้ใช้งานบนมือถือได้อย่างลื่นไหล สะอาดตา ไม่ซับซ้อน',
+      'ปรับเปลี่ยนรายการสินค้าบนมือถือเป็นการ์ดข้อมูลที่กรอกและปรับจำนวน/ราคาได้สะดวก',
+      'เพิ่มแถบเมนูและปุ่มคำสั่งลัดสำหรับสมาร์ตโฟน (Mobile Quick Actions)',
+      'จัดระเบียบส่วนหัว (Header) ให้ยืดหยุ่น ไม่ล้นหรือบีบอัดหน้าจอ',
+    ],
+  },
+  {
+    version: '2.2.0',
+    date: '2026-10-03',
+    title: 'Clean Minimal UI, On-Demand A4 Preview & Streamlined Export',
+    highlights: [
+      'จัดระเบียบหน้าจอให้สะอาดตา ไม่แออัด ซ่อนแถบพรีวิวเอกสารข้างจอตามคำขอของผู้ใช้',
+      'เพิ่มหน้าต่างดูตัวอย่างเอกสาร A4 (Document Preview Modal) เรียกดูเมื่อต้องการได้ทุกเวลา',
+      'จัดปุ่ม ดูตัวอย่าง, ส่งออก JPG (สำหรับส่ง LINE), และพิมพ์/บันทึก PDF ให้เข้าถึงได้ง่ายและชัดเจน',
+      'ปรับขนาดตารางและแบบฟอร์มให้กว้างสบายตา พิมพ์ข้อมูลได้สะดวก รวดเร็ว และเป็นระเบียบ',
+    ],
+  },
   {
     version: '2.1.0',
     date: '2026-10-02',
