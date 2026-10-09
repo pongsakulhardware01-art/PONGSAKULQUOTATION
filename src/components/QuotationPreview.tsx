@@ -2,6 +2,7 @@ import React from 'react';
 import { QuotationDocument } from '../types';
 import { formatCurrency, formatThaiDate } from '../utils/formatters';
 import { LogoEmblem } from './LogoEmblem';
+import { WatermarkOverlay } from './WatermarkOverlay';
 import { Building2, Phone, Mail, FileText, CreditCard, ShieldCheck, MapPin } from 'lucide-react';
 
 interface QuotationPreviewProps {
@@ -25,6 +26,12 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
   const showSku = settings.showSkuColumn !== false;
   const showDetails = settings.showItemDetails !== false;
   const logoStyle = settings.logoStyle || 'concrete-banner';
+  const showWatermark = settings.showWatermark !== false;
+  const watermarkStyle = settings.watermarkStyle || 'logo-diagonal';
+  const watermarkOpacity =
+    settings.watermarkOpacity === 0.08 || settings.watermarkOpacity === undefined
+      ? 0.055
+      : settings.watermarkOpacity;
 
   // Spacing & Font sizing classes
   const isLargeText = fontSize === 'large';
@@ -55,8 +62,8 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
     : 'w-full flex justify-center py-2 sm:py-6';
 
   const containerClass = isExportMode
-    ? `bg-white w-[794px] min-h-[1123px] p-8 text-stone-900 rounded-none ${baseTextClass} leading-normal flex flex-col justify-between`
-    : `a4-page bg-white w-full max-w-[210mm] min-h-[297mm] p-6 sm:p-10 shadow-lg border border-stone-200 text-stone-900 rounded-sm ${baseTextClass} leading-normal flex flex-col justify-between`;
+    ? `relative overflow-hidden bg-white w-[794px] min-h-[1123px] p-8 text-stone-900 rounded-none ${baseTextClass} leading-normal flex flex-col justify-between`
+    : `relative overflow-hidden a4-page bg-white w-full max-w-[210mm] min-h-[297mm] p-6 sm:p-10 shadow-lg border border-stone-200 text-stone-900 rounded-sm ${baseTextClass} leading-normal flex flex-col justify-between`;
 
   return (
     <div className={wrapperClass}>
@@ -66,7 +73,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         style={isExportMode ? { width: '794px', minHeight: '1123px', boxSizing: 'border-box' } : undefined}
         className={containerClass}
       >
-        <div>
+        <div className="relative z-10">
           {/* ========================================================
               1. HEADER SECTION (Clean, High Clarity, Crisp Logo)
               ======================================================== */}
@@ -627,54 +634,67 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
           )}
         </div>
 
-        {/* ========================================================
-            6. SIGNATURE BLOCK (Clean & Spacious)
-            ======================================================== */}
-        {settings.showSignatureArea && (
-          <div className="mt-6 pt-4 border-t border-stone-200 grid grid-cols-3 gap-4 text-center text-[10.5px] avoid-break">
-            {/* 1. Prepared By */}
-            <div className="flex flex-col justify-end space-y-1">
-              <div className="h-14 border-b border-stone-300 border-dashed flex items-end justify-center pb-1">
-                <span className="text-[10px] text-stone-600 font-medium">
-                  {settings.salesperson || '(................................................)'}
-                </span>
+        {/* Bottom Section (Signatures & Document Footer) */}
+        <div className="relative z-10">
+          {/* ========================================================
+              6. SIGNATURE BLOCK (Clean & Spacious)
+              ======================================================== */}
+          {settings.showSignatureArea && (
+            <div className="mt-6 pt-4 border-t border-stone-200 grid grid-cols-3 gap-4 text-center text-[10.5px] avoid-break">
+              {/* 1. Prepared By */}
+              <div className="flex flex-col justify-end space-y-1">
+                <div className="h-14 border-b border-stone-300 border-dashed flex items-end justify-center pb-1">
+                  <span className="text-[10px] text-stone-600 font-medium">
+                    {settings.salesperson || '(................................................)'}
+                  </span>
+                </div>
+                <p className="font-bold text-stone-800">ผู้เสนอราคา / จัดทำโดย</p>
+                <p className="text-[9.5px] text-stone-500 font-mono">วันที่ ....../....../......</p>
               </div>
-              <p className="font-bold text-stone-800">ผู้เสนอราคา / จัดทำโดย</p>
-              <p className="text-[9.5px] text-stone-500 font-mono">วันที่ ....../....../......</p>
-            </div>
 
-            {/* 2. Authorized Signature & Stamp */}
-            <div className="flex flex-col justify-end space-y-1 border-l border-r border-stone-200 px-2">
-              <div className="h-14 border-b border-stone-300 border-dashed flex items-center justify-center">
-                <span className="text-[9.5px] text-stone-400 font-light italic">
-                  [ ตราประทับ บจก. พงษ์สกุล ฮาร์ดแวร์ ]
-                </span>
+              {/* 2. Authorized Signature & Stamp */}
+              <div className="flex flex-col justify-end space-y-1 border-l border-r border-stone-200 px-2">
+                <div className="h-14 border-b border-stone-300 border-dashed flex items-center justify-center">
+                  <span className="text-[9.5px] text-stone-400 font-light italic">
+                    [ ตราประทับ บจก. พงษ์สกุล ฮาร์ดแวร์ ]
+                  </span>
+                </div>
+                <p className="font-bold text-red-700">ผู้มีอำนาจลงนาม</p>
+                <p className="text-[9.5px] text-stone-600 font-medium">บจก. พงษ์สกุล ฮาร์ดแวร์</p>
               </div>
-              <p className="font-bold text-red-700">ผู้มีอำนาจลงนาม</p>
-              <p className="text-[9.5px] text-stone-600 font-medium">บจก. พงษ์สกุล ฮาร์ดแวร์</p>
-            </div>
 
-            {/* 3. Customer Acceptance */}
-            <div className="flex flex-col justify-end space-y-1">
-              <div className="h-14 border-b border-stone-300 border-dashed flex items-end justify-center pb-1">
-                <span className="text-[9.5px] text-stone-400 font-light">
-                  (......................................................)
-                </span>
+              {/* 3. Customer Acceptance */}
+              <div className="flex flex-col justify-end space-y-1">
+                <div className="h-14 border-b border-stone-300 border-dashed flex items-end justify-center pb-1">
+                  <span className="text-[9.5px] text-stone-400 font-light">
+                    (......................................................)
+                  </span>
+                </div>
+                <p className="font-bold text-stone-800">ผู้อนุมัติสั่งซื้อ / ผู้รับเอกสาร</p>
+                <p className="text-[9.5px] text-stone-500 font-mono">วันที่ ....../....../......</p>
               </div>
-              <p className="font-bold text-stone-800">ผู้อนุมัติสั่งซื้อ / ผู้รับเอกสาร</p>
-              <p className="text-[9.5px] text-stone-500 font-mono">วันที่ ....../....../......</p>
             </div>
+          )}
+
+          {/* Document Version & Print Audit Footer */}
+          <div className="pt-3 mt-4 text-[9px] text-stone-400 font-mono flex items-center justify-between border-t border-stone-200/60">
+            <span>
+              เอกสาร: {quote.quoteNumber} (Rev. {String(quote.revision || 0).padStart(2, '0')})
+              {quote.revisionNote ? ` - ${quote.revisionNote}` : ''}
+            </span>
+            <span>บจก. พงษ์สกุล ฮาร์ดแวร์ • ออกโดยระบบคลาวด์</span>
           </div>
-        )}
-
-        {/* Document Version & Print Audit Footer */}
-        <div className="pt-3 mt-4 text-[9px] text-stone-400 font-mono flex items-center justify-between border-t border-stone-200/60">
-          <span>
-            เอกสาร: {quote.quoteNumber} (Rev. {String(quote.revision || 0).padStart(2, '0')})
-            {quote.revisionNote ? ` - ${quote.revisionNote}` : ''}
-          </span>
-          <span>บจก. พงษ์สกุล ฮาร์ดแวร์ • ออกโดยระบบคลาวด์</span>
         </div>
+
+        {/* Topmost Watermark Layer (ลายน้ำอยู่เลเยอร์บนสุด พาดทับตารางและข้อมูล) */}
+        {showWatermark && watermarkStyle !== 'none' && (
+          <WatermarkOverlay
+            style={watermarkStyle}
+            opacity={watermarkOpacity}
+            customLogoUrl={company.logoUrl}
+            companyNameEn={company.nameEn || 'Pongsakul Hardware'}
+          />
+        )}
       </div>
     </div>
   );

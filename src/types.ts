@@ -71,6 +71,7 @@ export type QuotationTemplateStyle = 'clean-modern' | 'classic-red' | 'minimal-s
 export type TableDensity = 'comfortable' | 'compact';
 export type PreviewFontSize = 'normal' | 'large';
 export type LogoStyle = 'concrete-banner' | 'concrete-icon' | 'hardware-hex' | 'none';
+export type WatermarkStyle = 'logo-diagonal' | 'emblem-diagonal' | 'logo-center' | 'text-diagonal' | 'none';
 
 export interface QuotationSettings {
   vatType: VatType; // 'exclude' (7% added), 'include' (price includes VAT), 'none'
@@ -94,6 +95,10 @@ export interface QuotationSettings {
   showSkuColumn?: boolean;
   showItemDetails?: boolean;
   logoStyle?: LogoStyle;
+  // Watermark Settings (ลายน้ำ โลโก้พาดเอกสาร)
+  showWatermark?: boolean;
+  watermarkStyle?: WatermarkStyle;
+  watermarkOpacity?: number; // e.g. 0.05 - 0.15 (default 0.08)
 }
 
 export interface QuotationDocument {

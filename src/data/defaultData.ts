@@ -256,6 +256,9 @@ export function createInitialQuotation(): QuotationDocument {
     showSkuColumn: true,
     showItemDetails: true,
     logoStyle: 'concrete-banner' as const,
+    showWatermark: true,
+    watermarkStyle: 'logo-diagonal' as const,
+    watermarkOpacity: 0.05,
   };
 
   const totals = recalculateQuotation(initialItems, settings);

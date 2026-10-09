@@ -235,6 +235,48 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                 />
                 <span>แสดงช่องลงนาม</span>
               </label>
+
+              <label className="flex items-center gap-1.5 cursor-pointer text-amber-300 hover:text-amber-200 font-medium">
+                <input
+                  type="checkbox"
+                  checked={quote.settings.showWatermark !== false}
+                  onChange={(e) => onUpdateSettings({ showWatermark: e.target.checked })}
+                  className="rounded border-stone-700 text-red-600 focus:ring-red-500"
+                />
+                <span>ลายน้ำโลโก้พาด (Watermark)</span>
+              </label>
+
+              {quote.settings.showWatermark !== false && (
+                <>
+                  <div className="flex items-center gap-1.5 bg-stone-800/80 px-2 py-0.5 rounded-lg border border-stone-700">
+                    <span className="text-stone-400 text-[11px]">แบบ:</span>
+                    <select
+                      value={quote.settings.watermarkStyle || 'logo-diagonal'}
+                      onChange={(e) => onUpdateSettings({ watermarkStyle: e.target.value as any })}
+                      className="bg-transparent text-stone-200 text-xs outline-none cursor-pointer"
+                    >
+                      <option value="logo-diagonal" className="bg-stone-900 text-white">🛡️ โลโก้พาดเฉียง</option>
+                      <option value="emblem-diagonal" className="bg-stone-900 text-white">🏛️ ตราสัญลักษณ์</option>
+                      <option value="logo-center" className="bg-stone-900 text-white">➖ โลโก้กึ่งกลาง</option>
+                      <option value="text-diagonal" className="bg-stone-900 text-white">📜 ข้อความริบบิ้น</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 bg-stone-800/80 px-2 py-0.5 rounded-lg border border-stone-700">
+                    <span className="text-stone-400 text-[11px]">ความเข้ม:</span>
+                    <select
+                      value={quote.settings.watermarkOpacity ?? 0.05}
+                      onChange={(e) => onUpdateSettings({ watermarkOpacity: parseFloat(e.target.value) })}
+                      className="bg-transparent text-stone-200 text-xs outline-none cursor-pointer"
+                    >
+                      <option value="0.035" className="bg-stone-900 text-white">จางมาก (3.5%)</option>
+                      <option value="0.05" className="bg-stone-900 text-white">จางนุ่มนวล (5% แนะนำ)</option>
+                      <option value="0.08" className="bg-stone-900 text-white">ปานกลาง (8%)</option>
+                      <option value="0.12" className="bg-stone-900 text-white">ชัดเจน (12%)</option>
+                    </select>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

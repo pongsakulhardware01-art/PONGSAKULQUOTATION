@@ -1,6 +1,6 @@
 import React from 'react';
-import { QuotationSettings, LogoStyle } from '../types';
-import { LayoutTemplate, Image, Check } from 'lucide-react';
+import { QuotationSettings, LogoStyle, WatermarkStyle } from '../types';
+import { LayoutTemplate, Image, Check, Stamp } from 'lucide-react';
 
 interface VisualSettingsToolbarProps {
   settings: QuotationSettings;
@@ -18,6 +18,8 @@ export const VisualSettingsToolbar: React.FC<VisualSettingsToolbarProps> = ({
   const currentFontSize = settings.fontSize || 'normal';
   const currentLogoStyle = settings.logoStyle || 'concrete-banner';
   const showSku = settings.showSkuColumn !== false;
+  const showWatermark = settings.showWatermark !== false;
+  const watermarkStyle = settings.watermarkStyle || 'logo-diagonal';
 
   return (
     <div className={`bg-white rounded-xl border border-stone-200 shadow-xs p-3 ${className}`}>
@@ -113,6 +115,88 @@ export const VisualSettingsToolbar: React.FC<VisualSettingsToolbarProps> = ({
                 ฮาร์ดแวร์
               </button>
             </div>
+          </div>
+
+          {/* Watermark Selector */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-stone-500 font-medium flex items-center gap-1 text-[11px]">
+              <Stamp className="w-3.5 h-3.5 text-red-600" />
+              <span>ลายน้ำ:</span>
+            </span>
+
+            <div className="inline-flex bg-stone-100 p-0.5 rounded-lg border border-stone-200 text-[11px]">
+              <button
+                type="button"
+                title="ลายน้ำโลโก้พงษ์สกุล พาดเฉียงกลางเอกสาร A4 (แนะนำ)"
+                onClick={() => {
+                  onUpdateSettings('showWatermark', true);
+                  onUpdateSettings('watermarkStyle', 'logo-diagonal');
+                }}
+                className={`px-2 py-1 rounded-md font-medium transition-all ${
+                  showWatermark && watermarkStyle === 'logo-diagonal'
+                    ? 'bg-white text-red-700 font-bold shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                🛡️ โลโก้พาดเฉียง
+              </button>
+              <button
+                type="button"
+                title="ลายน้ำสัญลักษณ์ตราพงษ์สกุล"
+                onClick={() => {
+                  onUpdateSettings('showWatermark', true);
+                  onUpdateSettings('watermarkStyle', 'emblem-diagonal');
+                }}
+                className={`px-2 py-1 rounded-md font-medium transition-all ${
+                  showWatermark && watermarkStyle === 'emblem-diagonal'
+                    ? 'bg-white text-red-700 font-bold shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                🏛️ ตราสัญลักษณ์
+              </button>
+              <button
+                type="button"
+                title="ปิดการแสดงลายน้ำ"
+                onClick={() => onUpdateSettings('showWatermark', !showWatermark)}
+                className={`px-2 py-1 rounded-md font-medium transition-all ${
+                  !showWatermark
+                    ? 'bg-stone-300 text-stone-900 font-bold shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                {showWatermark ? 'เปิดอยู่' : 'ปิดลายน้ำ'}
+              </button>
+            </div>
+
+            {showWatermark && (
+              <div className="inline-flex bg-stone-100 p-0.5 rounded-lg border border-stone-200 text-[11px]">
+                <button
+                  type="button"
+                  title="ระดับจางนุ่มนวล 5% (แนะนำ - อ่านง่ายสบายตา)"
+                  onClick={() => onUpdateSettings('watermarkOpacity', 0.05)}
+                  className={`px-2 py-1 rounded-md font-medium transition-all ${
+                    (settings.watermarkOpacity ?? 0.05) <= 0.05
+                      ? 'bg-white text-red-700 font-bold shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  จางนุ่มนวล (5%)
+                </button>
+                <button
+                  type="button"
+                  title="ระดับปานกลาง 8%"
+                  onClick={() => onUpdateSettings('watermarkOpacity', 0.08)}
+                  className={`px-2 py-1 rounded-md font-medium transition-all ${
+                    (settings.watermarkOpacity ?? 0.05) > 0.05
+                      ? 'bg-white text-red-700 font-bold shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  เข้มขึ้น (8%)
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

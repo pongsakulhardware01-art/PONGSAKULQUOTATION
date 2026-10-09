@@ -1417,6 +1417,16 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
               />
               <span className="text-stone-700">แสดงคอลัมน์รหัสสินค้า (SKU)</span>
             </label>
+
+            <label className="flex items-center gap-2 cursor-pointer font-medium text-amber-900 bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200">
+              <input
+                type="checkbox"
+                checked={quote.settings.showWatermark !== false}
+                onChange={(e) => updateSettings('showWatermark', e.target.checked)}
+                className="w-4 h-4 text-red-600 rounded border-stone-300 focus:ring-red-500"
+              />
+              <span>ใส่ลายน้ำโลโก้พาดเอกสาร (Watermark)</span>
+            </label>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-stone-100">
@@ -1440,6 +1450,34 @@ export const QuotationEditor: React.FC<QuotationEditorProps> = ({
               <option value="comfortable">โปร่ง สบายตา (แนะนำ)</option>
               <option value="compact">กะทัดรัด</option>
             </select>
+
+            {quote.settings.showWatermark !== false && (
+              <>
+                <span className="text-stone-500 font-medium ml-2">รูปแบบลายน้ำ:</span>
+                <select
+                  value={quote.settings.watermarkStyle || 'logo-diagonal'}
+                  onChange={(e) => updateSettings('watermarkStyle', e.target.value)}
+                  className="text-xs rounded-lg px-2.5 py-1.5 border border-amber-300 bg-white font-medium text-amber-950 focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="logo-diagonal">🛡️ โลโก้พงษ์สกุล พาดเฉียง (แนะนำ)</option>
+                  <option value="emblem-diagonal">🏛️ สัญลักษณ์ตราพงษ์สกุล</option>
+                  <option value="logo-center">➖ โลโก้กึ่งกลางระนาบตรง</option>
+                  <option value="text-diagonal">📜 ข้อความริบบิ้น</option>
+                </select>
+
+                <span className="text-stone-500 font-medium ml-2">ความจาง:</span>
+                <select
+                  value={quote.settings.watermarkOpacity ?? 0.05}
+                  onChange={(e) => updateSettings('watermarkOpacity', parseFloat(e.target.value))}
+                  className="text-xs rounded-lg px-2.5 py-1.5 border border-amber-300 bg-white font-medium text-amber-950 focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="0.035">จางมาก (3.5%)</option>
+                  <option value="0.05">จางนุ่มนวล (5% แนะนำ)</option>
+                  <option value="0.08">ปานกลาง (8%)</option>
+                  <option value="0.12">ชัดเจน (12%)</option>
+                </select>
+              </>
+            )}
           </div>
         </div>
 

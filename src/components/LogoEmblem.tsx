@@ -2,7 +2,7 @@ import React from 'react';
 
 interface LogoEmblemProps {
   className?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'banner-sm' | 'banner-md' | 'banner-lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'banner-sm' | 'banner-md' | 'banner-lg' | 'watermark';
   variant?: 'full-banner' | 'icon-only' | 'hardware-hex';
   customLogoUrl?: string;
   phone?: string;
@@ -24,6 +24,8 @@ export const LogoEmblem: React.FC<LogoEmblemProps> = ({
         ? 'h-13'
         : size === 'lg' || size === 'banner-lg'
         ? 'h-18'
+        : size === 'watermark'
+        ? 'h-40 max-h-[220px]'
         : 'h-24';
 
     return (
@@ -31,7 +33,7 @@ export const LogoEmblem: React.FC<LogoEmblemProps> = ({
         <img
           src={customLogoUrl}
           alt="Company Logo"
-          className={`${imgHeight} object-contain max-w-[280px] drop-shadow-xs`}
+          className={`${imgHeight} object-contain max-w-[480px] drop-shadow-xs`}
           referrerPolicy="no-referrer"
         />
       </div>
@@ -41,7 +43,17 @@ export const LogoEmblem: React.FC<LogoEmblemProps> = ({
   // 1. Official Graphic Mark (Icon Only: Red circle + Beige house + Black stepped structure)
   if (variant === 'icon-only') {
     const iconDim =
-      size === 'sm' ? 36 : size === 'md' ? 48 : size === 'lg' ? 64 : size === 'xl' ? 80 : 54;
+      size === 'sm'
+        ? 36
+        : size === 'md'
+        ? 48
+        : size === 'lg'
+        ? 64
+        : size === 'xl'
+        ? 80
+        : size === 'watermark'
+        ? 210
+        : 54;
 
     return (
       <div className={`flex-shrink-0 flex items-center justify-center ${className}`}>
@@ -79,9 +91,10 @@ export const LogoEmblem: React.FC<LogoEmblemProps> = ({
 
   // 2. Hardware Hexagon Variant (Alternative)
   if (variant === 'hardware-hex') {
+    const hexDim = size === 'watermark' ? 200 : 44;
     return (
       <div className={`flex items-center gap-3 ${className}`}>
-        <svg width="44" height="44" viewBox="0 0 100 100" className="drop-shadow-sm flex-shrink-0">
+        <svg width={hexDim} height={hexDim} viewBox="0 0 100 100" className="drop-shadow-sm flex-shrink-0">
           <defs>
             <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#DC2626" />
@@ -111,14 +124,16 @@ export const LogoEmblem: React.FC<LogoEmblemProps> = ({
             fill="none"
           />
         </svg>
-        <div>
-          <span className="font-bold text-red-700 text-base leading-tight block">
-            บจก. พงษ์สกุล ฮาร์ดแวร์
-          </span>
-          <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
-            Pongsakul Hardware
-          </span>
-        </div>
+        {size !== 'watermark' && (
+          <div>
+            <span className="font-bold text-red-700 text-base leading-tight block">
+              บจก. พงษ์สกุล ฮาร์ดแวร์
+            </span>
+            <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
+              Pongsakul Hardware
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -129,6 +144,8 @@ export const LogoEmblem: React.FC<LogoEmblemProps> = ({
       ? { w: 200, h: 59 }
       : size === 'lg' || size === 'banner-lg'
       ? { w: 320, h: 95 }
+      : size === 'watermark'
+      ? { w: 540, h: 160 }
       : { w: 260, h: 77 };
 
   return (
